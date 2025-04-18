@@ -7,7 +7,7 @@ import {
   Dimensions,
 } from "react-native";
 import React from "react";
-import Login from "./components/Login";
+import Login from "../components/auth/Login";
 
 export default function index() {
   return (

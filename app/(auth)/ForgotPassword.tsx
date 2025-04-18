@@ -7,7 +7,7 @@ import {
   Dimensions,
 } from "react-native";
 import React from "react";
-import ForgetPassword from "./components/ForgetPassword";
+import ForgetPassword from "../components/auth/ForgetPassword";
 export default function ForgotPassword() {
   return (
     <View>

@@ -6,10 +6,28 @@ import {
   Image,
   Alert,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { router } from "expo-router";
+import { onAuthStateChanged } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { auth as patientAuth } from "./../../Firebase";
 
 export default function RoleSelection() {
+  useEffect(() => {
+    const checkLogin = onAuthStateChanged(patientAuth, async (user) => {
+      if (user) {
+        const role = await AsyncStorage.getItem("role");
+        if (role === "doctor") {
+          router.replace("/(doctor)/Home");
+        } else {
+          router.replace("/(patient)/(tabs)/HomePatient");
+        }
+      } else {
+        router.replace("/(auth)/Login");
+      }
+    });
+    return () => checkLogin();
+  }, []);
   const handleRoleSelect = (role: "doctor" | "patient") => {
     if (role === "doctor") {
       Alert.alert(

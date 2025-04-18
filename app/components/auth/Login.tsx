@@ -8,11 +8,11 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import React from "react";
-import { router, useLocalSearchParams } from "expo-router";
+import React, { useEffect } from "react";
+import { router, useLocalSearchParams, usePathname } from "expo-router";
 import { auth as patientAuth } from "../../../Firebase";
 import { auth as doctorAuth } from "../../../FireBaseDoctors";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { doc, getDoc } from "firebase/firestore";
@@ -128,7 +128,12 @@ export default function LoginExample() {
         <TouchableOpacity>
           <Text
             style={styles.forgotPassword}
-            onPress={() => router.push("/(auth)/ForgotPassword")}
+            onPress={() =>
+              router.push({
+                pathname: "/(auth)/ForgotPassword",
+                params: { role },
+              })
+            }
           >
             Forgot Password?
           </Text>

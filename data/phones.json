@@ -1,0 +1,307 @@
+{
+  "emergency_numbers": [
+    {
+      "country": "Afghanistan",
+      "iso_code": "AF",
+      "country_code": "+93",
+      "emergency_numbers": {
+        "police": "119",
+        "ambulance": "112",
+        "fire": "112"
+      }
+    },
+    {
+      "country": "Albania",
+      "iso_code": "AL",
+      "country_code": "+355",
+      "emergency_numbers": {
+        "general": "112",
+        "police": "129",
+        "ambulance": "127",
+        "fire": "128"
+      }
+    },
+    {
+      "country": "Algeria",
+      "iso_code": "DZ",
+      "country_code": "+213",
+      "emergency_numbers": {
+        "police": "17",
+        "ambulance": "14",
+        "fire": "14"
+      }
+    },
+    {
+      "country": "Argentina",
+      "iso_code": "AR",
+      "country_code": "+54",
+      "emergency_numbers": {
+        "police": "101",
+        "ambulance": "107",
+        "fire": "100"
+      }
+    },
+    {
+      "country": "Australia",
+      "iso_code": "AU",
+      "country_code": "+61",
+      "emergency_numbers": {
+        "general": "000"
+      }
+    },
+    {
+      "country": "Austria",
+      "iso_code": "AT",
+      "country_code": "+43",
+      "emergency_numbers": {
+        "general": "112",
+        "police": "133",
+        "ambulance": "144",
+        "fire": "122"
+      }
+    },
+    {
+      "country": "Bangladesh",
+      "iso_code": "BD",
+      "country_code": "+880",
+      "emergency_numbers": {
+        "police": "999",
+        "ambulance": "16263",
+        "fire": "16263"
+      }
+    },
+    {
+      "country": "Belgium",
+      "iso_code": "BE",
+      "country_code": "+32",
+      "emergency_numbers": {
+        "general": "112",
+        "police": "101",
+        "ambulance": "100",
+        "fire": "112"
+      }
+    },
+    {
+      "country": "Brazil",
+      "iso_code": "BR",
+      "country_code": "+55",
+      "emergency_numbers": {
+        "police": "190",
+        "ambulance": "192",
+        "fire": "193"
+      }
+    },
+    {
+      "country": "Canada",
+      "iso_code": "CA",
+      "country_code": "+1",
+      "emergency_numbers": {
+        "general": "911"
+      }
+    },
+    {
+      "country": "China",
+      "iso_code": "CN",
+      "country_code": "+86",
+      "emergency_numbers": {
+        "police": "110",
+        "ambulance": "120",
+        "fire": "119"
+      }
+    },
+    {
+      "country": "Egypt",
+      "iso_code": "EG",
+      "country_code": "+20",
+      "emergency_numbers": {
+        "police": "122",
+        "ambulance": "123",
+        "fire": "180"
+      }
+    },
+    {
+      "country": "France",
+      "iso_code": "FR",
+      "country_code": "+33",
+      "emergency_numbers": {
+        "general": "112",
+        "police": "17",
+        "ambulance": "15",
+        "fire": "18"
+      }
+    },
+    {
+      "country": "Germany",
+      "iso_code": "DE",
+      "country_code": "+49",
+      "emergency_numbers": {
+        "general": "112",
+        "police": "110"
+      }
+    },
+    {
+      "country": "India",
+      "iso_code": "IN",
+      "country_code": "+91",
+      "emergency_numbers": {
+        "general": "112",
+        "police": "100",
+        "ambulance": "102",
+        "fire": "101"
+      }
+    },
+    {
+      "country": "Indonesia",
+      "iso_code": "ID",
+      "country_code": "+62",
+      "emergency_numbers": {
+        "police": "110",
+        "ambulance": "118",
+        "fire": "113"
+      }
+    },
+    {
+      "country": "Italy",
+      "iso_code": "IT",
+      "country_code": "+39",
+      "emergency_numbers": {
+        "general": "112",
+        "police": "113",
+        "ambulance": "118",
+        "fire": "115"
+      }
+    },
+    {
+      "country": "Japan",
+      "iso_code": "JP",
+      "country_code": "+81",
+      "emergency_numbers": {
+        "police": "110",
+        "ambulance": "119",
+        "fire": "119"
+      }
+    },
+    {
+      "country": "Mexico",
+      "iso_code": "MX",
+      "country_code": "+52",
+      "emergency_numbers": {
+        "general": "911"
+      }
+    },
+    {
+      "country": "Nigeria",
+      "iso_code": "NG",
+      "country_code": "+234",
+      "emergency_numbers": {
+        "police": "112",
+        "ambulance": "112",
+        "fire": "112"
+      }
+    },
+    {
+      "country": "Pakistan",
+      "iso_code": "PK",
+      "country_code": "+92",
+      "emergency_numbers": {
+        "police": "15",
+        "ambulance": "115",
+        "fire": "16"
+      }
+    },
+    {
+      "country": "Russia",
+      "iso_code": "RU",
+      "country_code": "+7",
+      "emergency_numbers": {
+        "general": "112",
+        "police": "102",
+        "ambulance": "103",
+        "fire": "101"
+      }
+    },
+    {
+      "country": "Saudi Arabia",
+      "iso_code": "SA",
+      "country_code": "+966",
+      "emergency_numbers": {
+        "police": "911",
+        "ambulance": "997",
+        "fire": "998"
+      }
+    },
+    {
+      "country": "South Africa",
+      "iso_code": "ZA",
+      "country_code": "+27",
+      "emergency_numbers": {
+        "police": "10111",
+        "ambulance": "10177",
+        "fire": "112"
+      }
+    },
+    {
+      "country": "South Korea",
+      "iso_code": "KR",
+      "country_code": "+82",
+      "emergency_numbers": {
+        "police": "112",
+        "ambulance": "119",
+        "fire": "119"
+      }
+    },
+    {
+      "country": "Spain",
+      "iso_code": "ES",
+      "country_code": "+34",
+      "emergency_numbers": {
+        "general": "112"
+      }
+    },
+    {
+      "country": "Sweden",
+      "iso_code": "SE",
+      "country_code": "+46",
+      "emergency_numbers": {
+        "general": "112"
+      }
+    },
+    {
+      "country": "Turkey",
+      "iso_code": "TR",
+      "country_code": "+90",
+      "emergency_numbers": {
+        "general": "112",
+        "police": "155",
+        "ambulance": "112",
+        "fire": "110"
+      }
+    },
+    {
+      "country": "United Arab Emirates",
+      "iso_code": "AE",
+      "country_code": "+971",
+      "emergency_numbers": {
+        "police": "999",
+        "ambulance": "998",
+        "fire": "997"
+      }
+    },
+    {
+      "country": "United Kingdom",
+      "iso_code": "GB",
+      "country_code": "+44",
+      "emergency_numbers": {
+        "general": "999 or 112"
+      }
+    },
+    {
+      "country": "United States",
+      "iso_code": "US",
+      "country_code": "+1",
+      "emergency_numbers": {
+        "general": "911"
+      }
+    }
+  ]
+}

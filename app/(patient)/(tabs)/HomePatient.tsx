@@ -1,6 +1,6 @@
 import { View, Text, ScrollView } from "react-native";
 import React from "react";
-import ProfileBanner from "./components/ProfileBanner";
+import ProfileBanner from "../../components/patient/ProfileBanner";
 
 export default function Home() {
   return (
