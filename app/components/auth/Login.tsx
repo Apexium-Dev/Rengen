@@ -24,6 +24,31 @@ export default function LoginExample() {
   const [password, SetPassword] = React.useState("");
   const { role } = useLocalSearchParams();
 
+  useEffect(() => {
+    const checkUser = async () => {
+      const savedUser = await AsyncStorage.getItem("user");
+      if (savedUser) {
+        const user = JSON.parse(savedUser);
+        const auth = role === "doctor" ? doctorAuth : patientAuth;
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            router.push(
+              role === "doctor"
+                ? "/(doctor)/Home"
+                : "/(patient)/(tabs)/HomePatient"
+            );
+          } else {
+            AsyncStorage.removeItem("user");
+          }
+        });
+      } else {
+        console.log("No user found in AsyncStorage");
+      }
+    };
+
+    checkUser();
+  }, []);
+
   const handleLogin = () => {
     if (!email || !password) {
       alert("Please fill in all fields");
@@ -36,7 +61,6 @@ export default function LoginExample() {
       return;
     }
 
-    // Special case for test account
     if (email !== "test@gmail.com") {
       if (password.length < 6) {
         alert("Password must be at least 6 characters long");
@@ -64,7 +88,6 @@ export default function LoginExample() {
       }
     }
 
-    // Use the appropriate Firebase instance based on role
     const auth = role === "doctor" ? doctorAuth : patientAuth;
 
     signInWithEmailAndPassword(auth, email, password)
@@ -76,17 +99,14 @@ export default function LoginExample() {
           const docSnap = await getDoc(userRef);
           if (docSnap.exists()) {
             const userData = docSnap.data();
-
             await AsyncStorage.setItem("user", JSON.stringify(userData));
-
             alert("Login successful");
             console.log("User logged in:", user.email, "Data:", userData);
-
-            router.push({
-              pathname:
-                role === "doctor" ? "/(doctor)/Home" : "/(patient)/Home",
-              params: { role },
-            });
+            router.push(
+              role === "doctor"
+                ? "/(doctor)/Home"
+                : "/(patient)/(tabs)/HomePatient"
+            );
           } else {
             alert("No user data found in Firestore.");
           }

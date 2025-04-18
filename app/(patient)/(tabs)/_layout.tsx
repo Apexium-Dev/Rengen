@@ -29,15 +29,6 @@ export default function _layout() {
         }}
       />
       <Tabs.Screen
-        name="(pages)"
-        options={{
-          title: "Health",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="medical-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="Advice"
         options={{
           title: "Advice",

@@ -1,12 +1,74 @@
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import React from "react";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Entypo } from "@expo/vector-icons";
+import { auth, db } from "../../../Firebase";
+import { doc, getDoc } from "firebase/firestore"; // Entypo used for chevron
 
 export default function HealthProfile() {
+  const [blood, setBlood] = useState("");
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      loadUserProfile();
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
+  const loadUserProfile = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          setBlood(data.bloodType || "");
+        }
+      } catch (error) {
+        console.log("Error loading profile:", error);
+      }
+    }
+    setLoading(false);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text>Health Profile</Text>
+        <Text style={styles.header}>Health Profile</Text>
+
+        <TouchableOpacity style={styles.item} disabled>
+          <View style={styles.leftSection}>
+            <Ionicons name="heart" size={20} color="red" style={styles.icon} />
+            <Text style={styles.label}>Blood Type</Text>
+          </View>
+          <Text style={styles.value}>{blood}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.item}>
+          <View style={styles.leftSection}>
+            <Ionicons
+              name="medkit"
+              size={20}
+              color="#F97316"
+              style={styles.icon}
+            />
+            <Text style={styles.label}>Allergies</Text>
+          </View>
+          <Entypo name="chevron-right" size={20} color="#9CA3AF" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.item}>
+          <View style={styles.leftSection}>
+            <Ionicons
+              name="bandage"
+              size={20}
+              color="red"
+              style={styles.icon}
+            />
+            <Text style={styles.label}>Medications</Text>
+          </View>
+          <Entypo name="chevron-right" size={20} color="#9CA3AF" />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -22,7 +84,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 24,
-    alignItems: "flex-start",
     width: "90%",
     elevation: 3,
     shadowColor: "#000",
@@ -30,32 +91,38 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 6,
   },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 16,
-  },
-  name: {
-    fontSize: 18,
+  header: {
+    fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 4,
+    marginBottom: 24,
     color: "#1F2937",
+    alignSelf: "center",
   },
-  email: {
-    fontSize: 14,
-    color: "#6B7280",
-  },
-  editButton: {
-    marginTop: 24,
-    backgroundColor: "#2563EB",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+  item: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 8,
+    marginBottom: 12,
+    width: "100%",
   },
-  editText: {
-    color: "#FFFFFF",
+  leftSection: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  icon: {
+    marginRight: 12,
+  },
+  label: {
+    fontSize: 16,
+    color: "#374151",
+  },
+  value: {
+    fontSize: 16,
     fontWeight: "600",
-    fontSize: 14,
+    color: "#1F2937",
   },
 });

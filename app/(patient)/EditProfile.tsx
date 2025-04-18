@@ -12,11 +12,13 @@ import { auth } from "../../Firebase";
 import { db } from "../../Firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { router } from "expo-router";
+import { Picker } from "@react-native-picker/picker";
+import { FadeSpec } from "@react-navigation/bottom-tabs/lib/typescript/src/TransitionConfigs/TransitionSpecs";
 
 export default function EditProfile() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+  const [bloodType, setBloodType] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,9 +32,9 @@ export default function EditProfile() {
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           const data = userDoc.data();
-          setName(data.name || "");
+          setName(data.name || "User2847");
           setPhone(data.phone || "");
-          setAddress(data.address || "");
+          setBloodType(data.bloodType || "Not Set");
         }
       } catch (error) {
         console.error("Error loading profile:", error);
@@ -49,10 +51,12 @@ export default function EditProfile() {
       await updateDoc(doc(db, "users", user.uid), {
         name,
         phone,
-        address,
+        bloodType,
         updatedAt: new Date(),
       });
+      setBloodType(bloodType);
       alert("Profile updated successfully");
+      loadUserProfile();
       router.back();
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -109,17 +113,22 @@ export default function EditProfile() {
           placeholderTextColor="#9CA3AF"
           keyboardType="phone-pad"
         />
-
-        <Text style={styles.label}>Address</Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          value={address}
-          onChangeText={setAddress}
-          placeholder="Enter your address"
-          placeholderTextColor="#9CA3AF"
-          multiline
-          numberOfLines={3}
-        />
+        <Text style={styles.label}>Blood Type</Text>
+        <Picker
+          selectedValue={bloodType}
+          onValueChange={(itemValue) => setBloodType(itemValue)}
+          style={styles.input}
+        >
+          <Picker.Item label="Select your blood type" value="" />
+          <Picker.Item label="A+" value="A+" />
+          <Picker.Item label="A-" value="A-" />
+          <Picker.Item label="B+" value="B+" />
+          <Picker.Item label="B-" value="B-" />
+          <Picker.Item label="AB+" value="AB+" />
+          <Picker.Item label="AB-" value="AB-" />
+          <Picker.Item label="O+" value="O+" />
+          <Picker.Item label="O-" value="O-" />
+        </Picker>
 
         <TouchableOpacity
           style={styles.saveButton}
