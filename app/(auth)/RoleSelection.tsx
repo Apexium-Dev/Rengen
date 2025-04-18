@@ -11,7 +11,7 @@ import { router } from "expo-router";
 
 export default function RoleSelection() {
   const handleRoleSelect = (role: "doctor" | "patient") => {
-    if (role != "doctor") {
+    if (role === "doctor") {
       Alert.alert(
         "Doctor Login",
         "This section is for verified doctors only. New doctor accounts can only be created by administrators.",

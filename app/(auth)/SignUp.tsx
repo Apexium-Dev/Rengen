@@ -7,7 +7,7 @@ import {
   Dimensions,
 } from "react-native";
 import React from "react";
-import Signup from "./components/signup";
+import SignUp from "./components/SignUp";
 
 export default function signup() {
   return (
@@ -18,7 +18,7 @@ export default function signup() {
           style={styles.logo}
           resizeMode="contain"
         />
-        <Signup />
+        <SignUp />
       </View>
     </ScrollView>
   );

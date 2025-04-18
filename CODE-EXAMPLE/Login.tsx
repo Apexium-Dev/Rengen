@@ -15,11 +15,7 @@ import { auth as doctorAuth } from "../../../FireBaseDoctors";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { doc, getDoc } from "firebase/firestore";
-import { db as patientDb } from "../../../Firebase";
-import { db as doctorDb } from "../../../FireBaseDoctors";
-
-export default function LoginExample() {
+export default function Login() {
   const [email, SetEmail] = React.useState("");
   const [password, SetPassword] = React.useState("");
   const { role } = useLocalSearchParams();
@@ -70,26 +66,17 @@ export default function LoginExample() {
     signInWithEmailAndPassword(auth, email, password)
       .then(async () => {
         const user = auth.currentUser;
-        const db = role === "doctor" ? doctorDb : patientDb;
         if (user) {
-          const userRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(userRef);
-          if (docSnap.exists()) {
-            const userData = docSnap.data();
-
-            await AsyncStorage.setItem("user", JSON.stringify(userData));
-
-            alert("Login successful");
-            console.log("User logged in:", user.email, "Data:", userData);
-
-            router.push({
-              pathname:
-                role === "doctor" ? "/(doctor)/Home" : "/(patient)/Home",
-              params: { role },
-            });
-          } else {
-            alert("No user data found in Firestore.");
-          }
+          await AsyncStorage.setItem(
+            "user",
+            JSON.stringify({ email: user.email, role })
+          );
+          alert("Login successful");
+          console.log("User logged in:", user.email, "Role:", role);
+          router.push({
+            pathname: role === "doctor" ? "/(doctor)/Home" : "/(patient)/Home",
+            params: { role },
+          });
         }
       })
       .catch((error) => {
