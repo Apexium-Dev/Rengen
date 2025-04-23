@@ -115,9 +115,9 @@ export default function EditProfile() {
         />
         <Text style={styles.label}>Blood Type</Text>
         <Picker
-          selectedValue={bloodType}
-          onValueChange={(itemValue) => setBloodType(itemValue)}
-          style={styles.input}
+            selectedValue={bloodType}
+            onValueChange={(itemValue) => setBloodType(itemValue)}
+            style={styles.picker}
         >
           <Picker.Item label="Select your blood type" value="" />
           <Picker.Item label="A+" value="A+" />
@@ -129,6 +129,7 @@ export default function EditProfile() {
           <Picker.Item label="O+" value="O+" />
           <Picker.Item label="O-" value="O-" />
         </Picker>
+
 
         <TouchableOpacity
           style={styles.saveButton}
@@ -146,6 +147,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F9FAFB",
   },
+  picker: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+    color: "#111827",
+  }
+,
   header: {
     padding: 20,
     backgroundColor: "#FFFFFF",
