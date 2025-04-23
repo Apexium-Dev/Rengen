@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { auth, db } from "../../../Firebase";
 import { router } from "expo-router";
@@ -9,7 +9,7 @@ export default function SettingsProfile() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const currentUser = auth.currentUser;
     if (currentUser) {
       setEmail(currentUser.email || "");

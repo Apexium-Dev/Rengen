@@ -1,20 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import { auth, db } from "../../../Firebase";
-import { doc, getDoc } from "firebase/firestore"; // Entypo used for chevron
+import { doc, getDoc } from "firebase/firestore";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 export default function HealthProfile() {
   const [blood, setBlood] = useState("");
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      loadUserProfile();
-    } else {
-      setLoading(false);
-    }
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        loadUserProfile();
+      } else {
+        setLoading(false);
+      }
+    }, [])
+  );
 
   const loadUserProfile = async () => {
     const user = auth.currentUser;

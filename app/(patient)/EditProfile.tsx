@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   input: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FFFFF",
     borderWidth: 1,
     borderColor: "#E5E7EB",
     borderRadius: 12,
