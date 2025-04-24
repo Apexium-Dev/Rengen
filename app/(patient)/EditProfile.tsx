@@ -14,6 +14,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { router } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import { FadeSpec } from "@react-navigation/bottom-tabs/lib/typescript/src/TransitionConfigs/TransitionSpecs";
+import Avatar from "../components/ui/ProfileAvatar";
 
 export default function EditProfile() {
   const [name, setName] = useState("");
@@ -85,13 +86,7 @@ export default function EditProfile() {
       </View>
 
       <View style={styles.imageContainer}>
-        <Image
-          source={require("./../../assets/images/react-logo.png")}
-          style={styles.profileImage}
-        />
-        <TouchableOpacity style={styles.changePhotoButton}>
-          <Text style={styles.changePhotoText}>Change Photo</Text>
-        </TouchableOpacity>
+        <Avatar seed={name} size={120} />
       </View>
 
       <View style={styles.form}>
@@ -115,9 +110,9 @@ export default function EditProfile() {
         />
         <Text style={styles.label}>Blood Type</Text>
         <Picker
-            selectedValue={bloodType}
-            onValueChange={(itemValue) => setBloodType(itemValue)}
-            style={styles.picker}
+          selectedValue={bloodType}
+          onValueChange={(itemValue) => setBloodType(itemValue)}
+          style={styles.picker}
         >
           <Picker.Item label="Select your blood type" value="" />
           <Picker.Item label="A+" value="A+" />
@@ -129,7 +124,6 @@ export default function EditProfile() {
           <Picker.Item label="O+" value="O+" />
           <Picker.Item label="O-" value="O-" />
         </Picker>
-
 
         <TouchableOpacity
           style={styles.saveButton}
@@ -155,8 +149,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
     color: "#111827",
-  }
-,
+  },
   header: {
     padding: 20,
     backgroundColor: "#FFFFFF",

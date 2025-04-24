@@ -4,7 +4,8 @@ import { auth, db } from "../../../../Firebase";
 import { router } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
 import { ProfileStyles } from "@/app/styles/ProfileStyles";
-import {useFocusEffect} from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
+import Avatar from "../../ui/ProfileAvatar";
 
 export default function SettingsProfile() {
   const [email, setEmail] = useState("");
@@ -44,10 +45,7 @@ export default function SettingsProfile() {
   return (
     <View style={ProfileStyles.container}>
       <View style={ProfileStyles.card}>
-        <Image
-          source={require("../../../../assets/images/react-logo.png")}
-          style={ProfileStyles.avatar}
-        />
+        <Avatar seed={name} size={120} />
         <Text style={ProfileStyles.name}>{name}</Text>
         <Text style={ProfileStyles.email}>{email}</Text>
 
