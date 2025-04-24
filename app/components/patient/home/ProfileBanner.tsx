@@ -2,7 +2,7 @@ import { View, Image, StyleSheet, Text } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { auth, db } from "../../../../Firebase";
 import { doc, getDoc } from "firebase/firestore";
-import { HomeStyle } from "@/app/styles/HomeStyle";
+import { useHomeStyle } from "@/app/styles/HomeStyle";
 import { HoverEffect } from "react-native-gesture-handler";
 import { useFocusEffect } from "@react-navigation/native";
 import Avatar from "../../ui/ProfileAvatar";
@@ -10,6 +10,8 @@ import Avatar from "../../ui/ProfileAvatar";
 export default function ProfileBanner() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
+  const HomeStyle = useHomeStyle();
+
   useFocusEffect(
     useCallback(() => {
       const currentUser = auth.currentUser;

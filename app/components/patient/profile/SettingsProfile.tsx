@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { auth, db } from "../../../../Firebase";
 import { router } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
-import { ProfileStyles } from "@/app/styles/ProfileStyles";
+import { useProfileStyles } from "@/app/styles/ProfileStyles";
 import { useFocusEffect } from "@react-navigation/native";
 import Avatar from "../../ui/ProfileAvatar";
 
@@ -11,6 +11,7 @@ export default function SettingsProfile() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
+  const ProfileStyles = useProfileStyles();
 
   useFocusEffect(() => {
     const currentUser = auth.currentUser;

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LocationContext } from "@/app/context/LocationService";
+import { useTheme } from "@/app/context/ThemeContext";
 
 type AirQualityData = {
   data: {
@@ -17,6 +18,7 @@ type AirQualityData = {
 export default function Air() {
   const { location, address } = useContext(LocationContext);
   const [airQuality, setAirQuality] = useState<AirQualityData | null>(null);
+  const { colors } = useTheme();
 
   useEffect(() => {
     if (location?.latitude && location?.longitude) {
@@ -39,7 +41,7 @@ export default function Air() {
   }, [location]);
 
   if (!location) {
-    return <Text>Loading location...</Text>;
+    return <Text style={{ color: colors.text }}>Loading location...</Text>;
   }
 
   const aqi = airQuality?.data?.aqi ?? null;
@@ -62,23 +64,33 @@ export default function Air() {
       : "Unknown";
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.card }]}>
       <View style={styles.topRow}>
         <View style={styles.locationContainer}>
-          <Ionicons name="location" size={20} color="lightblue" />
-          <Text style={styles.locationText}>{address}</Text>
+          <Ionicons name="location" size={20} color={colors.primary} />
+          <Text style={[styles.locationText, { color: colors.text }]}>
+            {address}
+          </Text>
         </View>
-        <Text style={styles.temperatureText}>{temperature}°C</Text>
+        <Text style={[styles.temperatureText, { color: colors.text }]}>
+          {temperature}°C
+        </Text>
       </View>
 
       <View style={styles.bottomRow}>
-        <Text style={styles.updatedText}>Updated just now</Text>
-        <Text style={styles.humidityText}>Humidity: {humidity}%</Text>
+        <Text style={[styles.updatedText, { color: colors.secondary }]}>
+          Updated just now
+        </Text>
+        <Text style={[styles.humidityText, { color: colors.secondary }]}>
+          Humidity: {humidity}%
+        </Text>
       </View>
 
       <View style={styles.aqiContainer}>
-        <Text style={styles.aqiLabel}>Air Quality Index</Text>
-        <Text style={styles.aqiValue}>
+        <Text style={[styles.aqiLabel, { color: colors.text }]}>
+          Air Quality Index
+        </Text>
+        <Text style={[styles.aqiValue, { color: colors.text }]}>
           {airQualityLevel} - {aqi ?? "N/A"}
         </Text>
       </View>
@@ -89,7 +101,14 @@ export default function Air() {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: "#fff",
+    marginHorizontal: 16,
+    marginVertical: 8,
+    borderRadius: 12,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   topRow: {
     flexDirection: "row",
@@ -102,15 +121,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   locationText: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#333",
     marginLeft: 8,
+    fontSize: 16,
   },
   temperatureText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#0077b6",
+    fontSize: 18,
+    fontWeight: "600",
   },
   bottomRow: {
     flexDirection: "row",
@@ -119,30 +135,19 @@ const styles = StyleSheet.create({
   },
   updatedText: {
     fontSize: 14,
-    color: "#666",
   },
   humidityText: {
     fontSize: 14,
-    color: "#666",
   },
   aqiContainer: {
-    backgroundColor: "#eef6fa",
-    borderRadius: 12,
-    padding: 16,
-    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
   },
   aqiLabel: {
     fontSize: 16,
-    fontWeight: "500",
-    color: "#333",
     marginBottom: 8,
   },
   aqiValue: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#0077b6",
-    textAlign: "right",
   },
 });
