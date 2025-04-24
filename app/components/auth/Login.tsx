@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,181 +8,109 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
-import React, { useEffect } from "react";
-import { router, useLocalSearchParams, usePathname } from "expo-router";
-import { auth as patientAuth } from "../../../Firebase";
-import { auth as doctorAuth } from "../../../FireBaseDoctors";
-import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import { router } from "expo-router";
+import { auth } from "../../../Firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import { doc, getDoc } from "firebase/firestore";
-import { db as patientDb } from "../../../Firebase";
-import { db as doctorDb } from "../../../FireBaseDoctors";
+import { db } from "../../../Firebase";
+import { useTheme } from "@/app/context/ThemeContext";
 
 export default function LoginExample() {
-  const [email, SetEmail] = React.useState("");
-  const [password, SetPassword] = React.useState("");
-  const { role } = useLocalSearchParams();
+  const [email, SetEmail] = useState("");
+  const [password, SetPassword] = useState("");
+  const { colors } = useTheme();
 
-  useEffect(() => {
-    const checkUser = async () => {
-      const savedUser = await AsyncStorage.getItem("user");
-      if (savedUser) {
-        const user = JSON.parse(savedUser);
-        const auth = role === "doctor" ? doctorAuth : patientAuth;
-        onAuthStateChanged(auth, (user) => {
-          if (user) {
-            router.push(
-              role === "doctor"
-                ? "/(doctor)/Home"
-                : "/(patient)/(tabs)/HomePatient"
-            );
-          } else {
-            AsyncStorage.removeItem("user");
-          }
-        });
-      } else {
-        console.log("No user found in AsyncStorage");
-      }
-    };
-
-    checkUser();
-  }, []);
-
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
-      alert("Please fill in all fields");
+      Alert.alert("Error", "Please fill in all fields");
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address");
-      return;
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      await AsyncStorage.setItem("user", JSON.stringify(userCredential.user));
+      router.replace("/(patient)/(tabs)/HomePatient");
+    } catch (error: any) {
+      let errorMessage = "An error occurred during login";
+      if (error.code === "auth/invalid-email") {
+        errorMessage = "Invalid email address";
+      } else if (error.code === "auth/user-disabled") {
+        errorMessage = "This account has been disabled";
+      } else if (error.code === "auth/user-not-found") {
+        errorMessage = "No account found with this email";
+      } else if (error.code === "auth/wrong-password") {
+        errorMessage = "Incorrect password";
+      }
+      Alert.alert("Error", errorMessage);
     }
-
-    if (email !== "test@gmail.com") {
-      if (password.length < 6) {
-        alert("Password must be at least 6 characters long");
-        return;
-      }
-      if (password.length > 20) {
-        alert("Password must not exceed 20 characters");
-        return;
-      }
-      if (!/[A-Z]/.test(password)) {
-        alert("Password must contain at least one uppercase letter");
-        return;
-      }
-      if (!/[a-z]/.test(password)) {
-        alert("Password must contain at least one lowercase letter");
-        return;
-      }
-      if (!/[0-9]/.test(password)) {
-        alert("Password must contain at least one number");
-        return;
-      }
-      if (!/[!@#$%^&*,.]/.test(password)) {
-        alert("Password must contain at least one special character");
-        return;
-      }
-    }
-
-    const auth = role === "doctor" ? doctorAuth : patientAuth;
-
-    signInWithEmailAndPassword(auth, email, password)
-      .then(async () => {
-        const user = auth.currentUser;
-        const db = role === "doctor" ? doctorDb : patientDb;
-        if (user) {
-          const userRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(userRef);
-          if (docSnap.exists()) {
-            const userData = docSnap.data();
-            await AsyncStorage.setItem("user", JSON.stringify(userData));
-            alert("Login successful");
-            console.log("User logged in:", user.email, "Data:", userData);
-            router.push(
-              role === "doctor"
-                ? "/(doctor)/Home"
-                : "/(patient)/(tabs)/HomePatient"
-            );
-          } else {
-            alert("No user data found in Firestore.");
-          }
-        }
-      })
-      .catch((error) => {
-        if (role === "doctor") {
-          alert(
-            "Invalid doctor credentials. Please contact administrator if you need access."
-          );
-        } else {
-          alert(error.message);
-        }
-      });
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.loginText}>Welcome Back 👋</Text>
-      <Text style={styles.roleText}>Logging in as: {role}</Text>
-      <View style={styles.formContainer}>
-        <Text style={styles.label}>Email</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.loginText, { color: colors.text }]}>
+        Welcome Back 👋
+      </Text>
+      <View style={[styles.formContainer, { backgroundColor: colors.card }]}>
+        <Text style={[styles.label, { color: colors.text }]}>Email</Text>
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            {
+              backgroundColor: colors.card,
+              borderColor: colors.border,
+              color: colors.text,
+            },
+          ]}
           placeholder="Enter your email"
-          placeholderTextColor="#888"
+          placeholderTextColor={colors.secondary}
           value={email}
           onChangeText={SetEmail}
         />
-        <Text style={styles.label}>Password</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Password</Text>
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            {
+              backgroundColor: colors.card,
+              borderColor: colors.border,
+              color: colors.text,
+            },
+          ]}
           placeholder="Enter your password"
           secureTextEntry
-          placeholderTextColor="#888"
+          placeholderTextColor={colors.secondary}
           value={password}
           onChangeText={SetPassword}
         />
         <TouchableOpacity>
           <Text
-            style={styles.forgotPassword}
-            onPress={() =>
-              router.push({
-                pathname: "/(auth)/ForgotPassword",
-                params: { role },
-              })
-            }
+            style={[styles.forgotPassword, { color: colors.primary }]}
+            onPress={() => router.push("/(auth)/ForgotPassword")}
           >
             Forgot Password?
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[
-            styles.loginButton,
-            role === "doctor" ? styles.doctorButton : styles.patientButton,
-          ]}
+          style={[styles.loginButton, { backgroundColor: colors.accent }]}
           onPress={handleLogin}
         >
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
-        {role !== "doctor" && (
-          <>
-            <Text style={styles.orText}>Don't have an account? </Text>
-            <TouchableOpacity
-              onPress={() =>
-                router.push({
-                  pathname: "/(auth)/SignUp",
-                  params: { role },
-                })
-              }
-            >
-              <Text style={styles.signupText}>Sign Up</Text>
-            </TouchableOpacity>
-          </>
-        )}
+        <Text style={[styles.orText, { color: colors.secondary }]}>
+          Don't have an account?{" "}
+        </Text>
+        <TouchableOpacity onPress={() => router.push("/(auth)/SignUp")}>
+          <Text style={[styles.signupText, { color: colors.primary }]}>
+            Sign Up
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -196,19 +125,10 @@ const styles = StyleSheet.create({
   loginText: {
     fontSize: 28,
     fontWeight: "700",
-    color: "#111827",
     textAlign: "center",
     marginBottom: 8,
   },
-  roleText: {
-    fontSize: 16,
-    color: "#6B7280",
-    textAlign: "center",
-    marginBottom: 32,
-    textTransform: "capitalize",
-  },
   formContainer: {
-    backgroundColor: "#fff",
     borderRadius: 16,
     padding: 20,
     elevation: 4,
@@ -219,22 +139,17 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: "#374151",
     marginBottom: 6,
     marginTop: 12,
     marginLeft: 4,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#E5E7EB",
     borderRadius: 12,
     padding: 12,
     fontSize: 16,
-    backgroundColor: "#fff",
-    color: "#111",
   },
   forgotPassword: {
-    color: "#3B82F6",
     textAlign: "right",
     marginTop: 8,
     fontSize: 14,
@@ -245,12 +160,6 @@ const styles = StyleSheet.create({
     marginTop: 24,
     alignItems: "center",
   },
-  doctorButton: {
-    backgroundColor: "#3B82F6",
-  },
-  patientButton: {
-    backgroundColor: "#EF4444",
-  },
   loginButtonText: {
     color: "#fff",
     fontSize: 18,
@@ -260,11 +169,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
     marginBottom: 10,
-    color: "#6B7280",
     fontSize: 14,
   },
   signupText: {
-    color: "#3B82F6",
     fontSize: 14,
     fontWeight: "500",
     textAlign: "center",

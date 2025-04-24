@@ -8,14 +8,12 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import { auth as patientAuth } from "../../../Firebase";
-import { auth as doctorAuth } from "../../../FireBaseDoctors";
+import { auth } from "../../../Firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
-import { router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 
 export default function ForgetPassword() {
   const [email, setEmail] = useState("");
-  const { role } = useLocalSearchParams();
 
   const handleResetPassword = () => {
     if (!email) {
@@ -29,9 +27,6 @@ export default function ForgetPassword() {
       return;
     }
 
-    // Use the appropriate Firebase instance based on role
-    const auth = role === "doctor" ? doctorAuth : patientAuth;
-
     // Firebase password reset logic
     sendPasswordResetEmail(auth, email)
       .then(() => {
@@ -42,17 +37,10 @@ export default function ForgetPassword() {
       })
       .catch((error) => {
         console.error(error);
-        if (role === "doctor") {
-          Alert.alert(
-            "Error",
-            "If you are a verified doctor, please contact the administrator for assistance with password reset."
-          );
-        } else {
-          Alert.alert(
-            "Error",
-            "There was an issue with resetting your password."
-          );
-        }
+        Alert.alert(
+          "Error",
+          "There was an issue with resetting your password."
+        );
       });
   };
 
@@ -60,9 +48,6 @@ export default function ForgetPassword() {
     <ScrollView>
       <View style={styles.container}>
         <Text style={styles.headerText}>Forgot Password?</Text>
-        {role === "doctor" && (
-          <Text style={styles.roleText}>Doctor Account Recovery</Text>
-        )}
         <View style={styles.formContainer}>
           <Text style={styles.label}>Email</Text>
           <TextInput
@@ -73,23 +58,13 @@ export default function ForgetPassword() {
             onChangeText={setEmail}
           />
           <TouchableOpacity
-            style={[
-              styles.resetButton,
-              role === "doctor" ? styles.doctorButton : styles.patientButton,
-            ]}
+            style={styles.resetButton}
             onPress={handleResetPassword}
           >
             <Text style={styles.resetButtonText}>Reset Password</Text>
           </TouchableOpacity>
           <Text style={styles.orText}>Remember your password?</Text>
-          <TouchableOpacity
-            onPress={() =>
-              router.push({
-                pathname: "/(auth)/Login",
-                params: { role },
-              })
-            }
-          >
+          <TouchableOpacity onPress={() => router.push("/(auth)/Login")}>
             <Text style={styles.loginText}>Login</Text>
           </TouchableOpacity>
         </View>
@@ -110,12 +85,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 12,
     color: "#111827",
-  },
-  roleText: {
-    fontSize: 16,
-    color: "#6B7280",
-    textAlign: "center",
-    marginBottom: 32,
   },
   formContainer: {
     backgroundColor: "#fff",
@@ -144,16 +113,11 @@ const styles = StyleSheet.create({
     color: "#111",
   },
   resetButton: {
+    backgroundColor: "#EF4444",
     padding: 16,
     borderRadius: 12,
     marginTop: 24,
     alignItems: "center",
-  },
-  doctorButton: {
-    backgroundColor: "#3B82F6",
-  },
-  patientButton: {
-    backgroundColor: "#EF4444",
   },
   resetButtonText: {
     color: "#fff",

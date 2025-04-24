@@ -1,69 +1,39 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  Alert,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import React from "react";
 import { router } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTheme } from "../context/ThemeContext";
 
 export default function RoleSelection() {
-  const handleRoleSelect = (role: "doctor" | "patient") => {
-    if (role === "doctor") {
-      Alert.alert(
-        "Doctor Login",
-        "This section is for verified doctors only. New doctor accounts can only be created by administrators.",
-        [
-          {
-            text: "Continue to Login",
-            onPress: () =>
-              router.push({
-                pathname: "/(auth)/Login",
-                params: { role },
-              }),
-          },
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-        ]
-      );
-    } else {
-      router.push({
-        pathname: "/(auth)/Login",
-        params: { role },
-      });
-    }
+  const { colors } = useTheme();
+
+  const handleRoleSelect = () => {
+    router.push({
+      pathname: "/(auth)/Login",
+      params: { role: "patient" },
+    });
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.content}>
         <Image
           source={require("./../../assets/img/logo-removebg-preview.png")}
           style={styles.logo}
           resizeMode="contain"
         />
-        <Text style={styles.headerText}>Welcome to Rengen</Text>
-        <Text style={styles.subText}>Please select your role</Text>
+        <Text style={[styles.headerText, { color: colors.text }]}>
+          Welcome to Rengen
+        </Text>
+        <Text style={[styles.subText, { color: colors.secondary }]}>
+          Your Emergency Health Companion
+        </Text>
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={styles.roleButton}
-            onPress={() => handleRoleSelect("doctor")}
+            style={[styles.roleButton, { backgroundColor: colors.accent }]}
+            onPress={handleRoleSelect}
           >
-            <Text style={styles.roleButtonText}>I'm a Doctor</Text>
-            <Text style={styles.restrictedText}>(Verified doctors only)</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.roleButton, styles.patientButton]}
-            onPress={() => handleRoleSelect("patient")}
-          >
-            <Text style={styles.roleButtonText}>I'm a Patient</Text>
+            <Text style={styles.roleButtonText}>Get Started</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -74,7 +44,6 @@ export default function RoleSelection() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   content: {
     flex: 1,
@@ -90,13 +59,11 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 28,
     fontWeight: "700",
-    color: "#111827",
     textAlign: "center",
     marginBottom: 12,
   },
   subText: {
     fontSize: 18,
-    color: "#6B7280",
     textAlign: "center",
     marginBottom: 40,
   },
@@ -105,25 +72,15 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   roleButton: {
-    backgroundColor: "#3B82F6",
     padding: 20,
     borderRadius: 12,
     width: "100%",
     alignItems: "center",
-  },
-  patientButton: {
-    backgroundColor: "#EF4444",
   },
   roleButtonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",
     textAlign: "center",
-  },
-  restrictedText: {
-    color: "#fff",
-    fontSize: 12,
-    opacity: 0.8,
-    marginTop: 4,
   },
 });

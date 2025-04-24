@@ -6,45 +6,18 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import React, { useState, useEffect } from "react";
-import { router, useLocalSearchParams } from "expo-router";
+import React, { useState } from "react";
+import { router } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../../Firebase";
-import { db } from "../../../Firebase"; // Import the Firestore database
-import { setDoc, doc } from "firebase/firestore"; // Import Firestore methods
+import { auth, db } from "../../../Firebase";
+import { setDoc, doc } from "firebase/firestore";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { role } = useLocalSearchParams();
-
-  // Prevent doctor registration through the app
-  useEffect(() => {
-    if (role === "doctor") {
-      Alert.alert(
-        "Restricted Access",
-        "Doctor accounts can only be created by administrators. Please contact support for more information.",
-        [
-          {
-            text: "Go Back",
-            onPress: () => router.push("/(auth)/RoleSelection"),
-          },
-        ]
-      );
-    }
-  }, [role]);
 
   const handleSignUp = () => {
-    // Prevent doctor registration
-    if (role === "doctor") {
-      Alert.alert(
-        "Restricted Access",
-        "Doctor accounts can only be created by administrators. Please contact support for more information."
-      );
-      return;
-    }
-
     if (!email || !password || !confirmPassword) {
       alert("Please fill in all fields");
       return;
@@ -97,37 +70,29 @@ export default function SignUp() {
           // Create user data object to save in Firestore
           const userData = {
             email: user.email,
-            role: role || "patient", // Default to patient if no role is passed
+            role: "patient",
             createdAt: new Date(),
           };
 
           // Save user data to Firestore
           try {
             await setDoc(doc(db, "users", user.uid), userData);
-            console.log("User signed up:", user.email, "Role:", role);
+            console.log("User signed up:", user.email);
           } catch (error) {
             console.error("Error saving user data to Firestore:", error);
             alert("Error creating user record in database.");
           }
         }
-        router.push({
-          pathname: "/(auth)/Login",
-          params: { role: "patient" },
-        });
+        router.push("/(auth)/Login");
       })
       .catch((error) => {
         alert(error.message);
       });
   };
 
-  // If it's a doctor trying to register, don't show the form
-  if (role === "doctor") {
-    return null;
-  }
-
   return (
     <View style={styles.container}>
-      <Text style={styles.signupText}>Create Your Patient Account</Text>
+      <Text style={styles.signupText}>Create Your Account</Text>
       <View style={styles.formContainer}>
         <Text style={styles.label}>Email</Text>
         <TextInput
@@ -155,21 +120,11 @@ export default function SignUp() {
           value={confirmPassword}
           onChangeText={setConfirmPassword}
         />
-        <TouchableOpacity
-          style={[styles.signupButton, styles.patientButton]}
-          onPress={handleSignUp}
-        >
+        <TouchableOpacity style={styles.signupButton} onPress={handleSignUp}>
           <Text style={styles.signupButtonText}>Sign Up</Text>
         </TouchableOpacity>
         <Text style={styles.orText}>Already have an account? </Text>
-        <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "/(auth)/Login",
-              params: { role: "patient" },
-            })
-          }
-        >
+        <TouchableOpacity onPress={() => router.push("/(auth)/Login")}>
           <Text style={styles.loginText}>Login</Text>
         </TouchableOpacity>
       </View>
@@ -179,16 +134,17 @@ export default function SignUp() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 24,
-    flexGrow: 1,
     justifyContent: "center",
+    backgroundColor: "#fff",
   },
   signupText: {
     fontSize: 28,
     fontWeight: "700",
     color: "#111827",
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: 32,
   },
   formContainer: {
     backgroundColor: "#fff",
@@ -217,13 +173,11 @@ const styles = StyleSheet.create({
     color: "#111",
   },
   signupButton: {
+    backgroundColor: "#EF4444",
     padding: 16,
     borderRadius: 12,
     marginTop: 24,
     alignItems: "center",
-  },
-  patientButton: {
-    backgroundColor: "#EF4444",
   },
   signupButtonText: {
     color: "#fff",

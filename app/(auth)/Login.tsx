@@ -8,17 +8,27 @@ import {
 } from "react-native";
 import React from "react";
 import Login from "../components/auth/Login";
+import { useTheme } from "../context/ThemeContext";
 
 export default function index() {
+  const { colors } = useTheme();
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        { backgroundColor: colors.background },
+      ]}
+    >
       <View style={styles.view}>
         <Image
           source={require("./../../assets/img/logo-removebg-preview.png")}
           style={styles.logo}
           resizeMode="contain"
         />
-        <Text style={styles.text}>Your Personal health companion</Text>
+        <Text style={[styles.text, { color: colors.text }]}>
+          Your Personal health companion
+        </Text>
         <Login />
       </View>
     </ScrollView>
