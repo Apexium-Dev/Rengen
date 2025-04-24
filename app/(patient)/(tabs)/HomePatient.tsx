@@ -3,11 +3,14 @@ import React from "react";
 import ProfileBanner from "../../components/patient/home/ProfileBanner";
 import Emergency from "@/app/components/patient/home/emergency";
 import Air from "@/app/components/patient/home/Air";
+import { useTheme } from "@/app/context/ThemeContext";
 
 export default function Home() {
+  const { colors } = useTheme();
+
   return (
     <ScrollView>
-      <View className="flex-1 bg-white">
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
         <ProfileBanner />
         <Air />
         <Emergency />
