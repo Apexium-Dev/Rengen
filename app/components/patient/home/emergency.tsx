@@ -10,45 +10,50 @@ export default function Emergency() {
   const handleButton = () => {
     router.push("../../screens/EmergencyButton");
   };
+
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: colors.accent }]}
-        onPress={handleButton}
-      >
-        <Ionicons name="call" size={20} color="white" style={styles.icon} />
-        <Text style={styles.buttonText}>Emergency Assistance</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity
+      style={[styles.button, { backgroundColor: colors.error }]}
+      onPress={handleButton}
+    >
+      <View style={styles.content}>
+        <Ionicons name="warning" size={32} color="white" />
+        <View style={styles.textContainer}>
+          <Text style={styles.title}>Emergency Help</Text>
+          <Text style={styles.subtitle}>Tap for immediate assistance</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginVertical: 16,
-  },
   button: {
-    flexDirection: "row",
-    borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignItems: "center",
-    justifyContent: "center",
+    borderRadius: 16,
+    padding: 20,
     elevation: 2,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
-  icon: {
-    marginRight: 10,
+  content: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
   },
-  buttonText: {
+  textContainer: {
+    flex: 1,
+  },
+  title: {
     color: "white",
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  subtitle: {
+    color: "white",
+    opacity: 0.8,
+    fontSize: 14,
+    marginTop: 4,
   },
 });

@@ -1,8 +1,17 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { LocationContext } from "@/app/context/LocationService";
+import { LocationContext } from "../../../context/LocationService";
 import { useTheme } from "@/app/context/ThemeContext";
+
+type AirQualityLevel =
+  | "Unknown"
+  | "Good"
+  | "Moderate"
+  | "Unhealthy for Sensitive Groups"
+  | "Unhealthy"
+  | "Very Unhealthy"
+  | "Hazardous";
 
 type AirQualityData = {
   data: {
@@ -17,8 +26,10 @@ type AirQualityData = {
 
 export default function Air() {
   const { location, address } = useContext(LocationContext);
-  const [airQuality, setAirQuality] = useState<AirQualityData | null>(null);
   const { colors } = useTheme();
+  const [temperature, setTemperature] = useState("--");
+  const [humidity, setHumidity] = useState("--");
+  const [aqi, setAqi] = useState<number | null>(null);
 
   useEffect(() => {
     if (location?.latitude && location?.longitude) {
@@ -28,9 +39,12 @@ export default function Air() {
 
         try {
           const response = await fetch(url);
-          const data = await response.json();
-          console.log("Fetched air quality data:", data);
-          setAirQuality(data);
+          const data: AirQualityData = await response.json();
+          if (data.status === "ok") {
+            setAqi(data.data.aqi);
+            setTemperature(data.data.iaqi?.t?.v?.toFixed(1) ?? "--");
+            setHumidity(data.data.iaqi?.h?.v?.toFixed(0) ?? "--");
+          }
         } catch (error) {
           console.error("Error fetching air quality data:", error);
         }
@@ -40,59 +54,78 @@ export default function Air() {
     }
   }, [location]);
 
-  if (!location) {
-    return <Text style={{ color: colors.text }}>Loading location...</Text>;
-  }
+  const getAirQualityLevel = (aqi: number | null): AirQualityLevel => {
+    if (!aqi) return "Unknown";
+    if (aqi <= 50) return "Good";
+    if (aqi <= 100) return "Moderate";
+    if (aqi <= 150) return "Unhealthy for Sensitive Groups";
+    if (aqi <= 200) return "Unhealthy";
+    if (aqi <= 300) return "Very Unhealthy";
+    return "Hazardous";
+  };
 
-  const aqi = airQuality?.data?.aqi ?? null;
-  const temperature = airQuality?.data?.iaqi?.t?.v ?? "N/A";
-  const humidity = airQuality?.data?.iaqi?.h?.v ?? "N/A";
+  const airQualityLevel = getAirQualityLevel(aqi);
 
-  const airQualityLevel =
-    aqi !== null
-      ? aqi <= 50
-        ? "Good"
-        : aqi <= 100
-        ? "Moderate"
-        : aqi <= 150
-        ? "Unhealthy for Sensitive Groups"
-        : aqi <= 200
-        ? "Unhealthy"
-        : aqi <= 300
-        ? "Very Unhealthy"
-        : "Hazardous"
-      : "Unknown";
+  const getAirQualityColor = (level: AirQualityLevel): string => {
+    switch (level) {
+      case "Good":
+        return "#4CAF50";
+      case "Moderate":
+        return "#FFC107";
+      case "Unhealthy for Sensitive Groups":
+        return "#FF9800";
+      case "Unhealthy":
+        return "#F44336";
+      case "Very Unhealthy":
+        return "#9C27B0";
+      case "Hazardous":
+        return "#880E4F";
+      default:
+        return colors.secondary;
+    }
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.card }]}>
-      <View style={styles.topRow}>
-        <View style={styles.locationContainer}>
+      <View style={styles.header}>
+        <View style={styles.locationRow}>
           <Ionicons name="location" size={20} color={colors.primary} />
-          <Text style={[styles.locationText, { color: colors.text }]}>
-            {address}
+          <Text
+            style={[styles.locationText, { color: colors.text }]}
+            numberOfLines={1}
+          >
+            {address || "Loading location..."}
           </Text>
         </View>
-        <Text style={[styles.temperatureText, { color: colors.text }]}>
+        <Text style={[styles.temperature, { color: colors.text }]}>
           {temperature}°C
         </Text>
       </View>
 
-      <View style={styles.bottomRow}>
-        <Text style={[styles.updatedText, { color: colors.secondary }]}>
-          Updated just now
-        </Text>
-        <Text style={[styles.humidityText, { color: colors.secondary }]}>
-          Humidity: {humidity}%
-        </Text>
-      </View>
+      <View style={styles.infoContainer}>
+        <View style={styles.infoItem}>
+          <Ionicons name="water-outline" size={24} color={colors.primary} />
+          <Text style={[styles.infoValue, { color: colors.text }]}>
+            {humidity}%
+          </Text>
+          <Text style={[styles.infoLabel, { color: colors.secondary }]}>
+            Humidity
+          </Text>
+        </View>
 
-      <View style={styles.aqiContainer}>
-        <Text style={[styles.aqiLabel, { color: colors.text }]}>
-          Air Quality Index
-        </Text>
-        <Text style={[styles.aqiValue, { color: colors.text }]}>
-          {airQualityLevel} - {aqi ?? "N/A"}
-        </Text>
+        <View style={styles.infoItem}>
+          <Ionicons
+            name="leaf-outline"
+            size={24}
+            color={getAirQualityColor(airQualityLevel)}
+          />
+          <Text style={[styles.infoValue, { color: colors.text }]}>
+            {aqi || "--"}
+          </Text>
+          <Text style={[styles.infoLabel, { color: colors.secondary }]}>
+            Air Quality
+          </Text>
+        </View>
       </View>
     </View>
   );
@@ -100,54 +133,50 @@ export default function Air() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    marginHorizontal: 16,
-    marginVertical: 8,
-    borderRadius: 12,
+    borderRadius: 16,
+    padding: 16,
     elevation: 2,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: 3.84,
   },
-  topRow: {
+  header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 16,
   },
-  locationContainer: {
+  locationRow: {
     flexDirection: "row",
     alignItems: "center",
+    flex: 1,
+    marginRight: 16,
   },
   locationText: {
-    marginLeft: 8,
     fontSize: 16,
+    marginLeft: 8,
+    flex: 1,
   },
-  temperatureText: {
-    fontSize: 18,
+  temperature: {
+    fontSize: 24,
     fontWeight: "600",
   },
-  bottomRow: {
+  infoContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
+    justifyContent: "space-around",
+    marginTop: 8,
   },
-  updatedText: {
-    fontSize: 14,
-  },
-  humidityText: {
-    fontSize: 14,
-  },
-  aqiContainer: {
+  infoItem: {
     alignItems: "center",
   },
-  aqiLabel: {
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  aqiValue: {
+  infoValue: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: "600",
+    marginTop: 4,
+  },
+  infoLabel: {
+    fontSize: 14,
+    marginTop: 2,
   },
 });
