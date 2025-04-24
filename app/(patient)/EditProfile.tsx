@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,17 +6,19 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Image,
+  ActivityIndicator,
 } from "react-native";
 import { auth } from "../../Firebase";
 import { db } from "../../Firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { router } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
-import { FadeSpec } from "@react-navigation/bottom-tabs/lib/typescript/src/TransitionConfigs/TransitionSpecs";
 import Avatar from "../components/ui/ProfileAvatar";
+import { useTheme } from "@/app/context/ThemeContext";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function EditProfile() {
+  const { colors } = useTheme();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [bloodType, setBloodType] = useState("");
@@ -33,9 +35,9 @@ export default function EditProfile() {
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           const data = userDoc.data();
-          setName(data.name || "User2847");
+          setName(data.name || "");
           setPhone(data.phone || "");
-          setBloodType(data.bloodType || "Not Set");
+          setBloodType(data.bloodType || "");
         }
       } catch (error) {
         console.error("Error loading profile:", error);
@@ -67,22 +69,29 @@ export default function EditProfile() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
+    <ScrollView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
+      <View
+        style={[
+          styles.header,
+          { backgroundColor: colors.card, borderBottomColor: colors.border },
+        ]}
+      >
         <TouchableOpacity
           onPress={() => router.back()}
           style={styles.backButton}
         >
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Ionicons name="arrow-back" size={24} color={colors.primary} />
         </TouchableOpacity>
-        <Text style={styles.title}>Edit Profile</Text>
+        <Text style={[styles.title, { color: colors.text }]}>Edit Profile</Text>
       </View>
 
       <View style={styles.imageContainer}>
@@ -90,43 +99,70 @@ export default function EditProfile() {
       </View>
 
       <View style={styles.form}>
-        <Text style={styles.label}>Full Name</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Full Name</Text>
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            {
+              backgroundColor: colors.card,
+              borderColor: colors.border,
+              color: colors.text,
+            },
+          ]}
           value={name}
           onChangeText={setName}
           placeholder="Enter your full name"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.secondary}
         />
 
-        <Text style={styles.label}>Phone Number</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Phone Number</Text>
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            {
+              backgroundColor: colors.card,
+              borderColor: colors.border,
+              color: colors.text,
+            },
+          ]}
           value={phone}
           onChangeText={setPhone}
           placeholder="Enter your phone number"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.secondary}
           keyboardType="phone-pad"
         />
-        <Text style={styles.label}>Blood Type</Text>
-        <Picker
-          selectedValue={bloodType}
-          onValueChange={(itemValue) => setBloodType(itemValue)}
-          style={styles.picker}
+
+        <Text style={[styles.label, { color: colors.text }]}>Blood Type</Text>
+        <View
+          style={[
+            styles.pickerContainer,
+            { backgroundColor: colors.card, borderColor: colors.border },
+          ]}
         >
-          <Picker.Item label="Select your blood type" value="" />
-          <Picker.Item label="A+" value="A+" />
-          <Picker.Item label="A-" value="A-" />
-          <Picker.Item label="B+" value="B+" />
-          <Picker.Item label="B-" value="B-" />
-          <Picker.Item label="AB+" value="AB+" />
-          <Picker.Item label="AB-" value="AB-" />
-          <Picker.Item label="O+" value="O+" />
-          <Picker.Item label="O-" value="O-" />
-        </Picker>
+          <Picker
+            selectedValue={bloodType}
+            onValueChange={(itemValue) => setBloodType(itemValue)}
+            style={[styles.picker, { color: colors.text }]}
+            dropdownIconColor={colors.text}
+          >
+            <Picker.Item
+              label="Select your blood type"
+              value=""
+              color={colors.secondary}
+            />
+            <Picker.Item label="A+" value="A+" color={colors.text} />
+            <Picker.Item label="A-" value="A-" color={colors.text} />
+            <Picker.Item label="B+" value="B+" color={colors.text} />
+            <Picker.Item label="B-" value="B-" color={colors.text} />
+            <Picker.Item label="AB+" value="AB+" color={colors.text} />
+            <Picker.Item label="AB-" value="AB-" color={colors.text} />
+            <Picker.Item label="O+" value="O+" color={colors.text} />
+            <Picker.Item label="O-" value="O-" color={colors.text} />
+          </Picker>
+        </View>
 
         <TouchableOpacity
-          style={styles.saveButton}
+          style={[styles.saveButton, { backgroundColor: colors.primary }]}
           onPress={handleUpdateProfile}
         >
           <Text style={styles.saveButtonText}>Save Changes</Text>
@@ -139,80 +175,50 @@ export default function EditProfile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderRadius: 12,
+    marginBottom: 16,
+    overflow: "hidden",
   },
   picker: {
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
-    color: "#111827",
+    marginHorizontal: -8,
   },
   header: {
     padding: 20,
-    backgroundColor: "#FFFFFF",
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
   },
   backButton: {
     marginRight: 16,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: "#3B82F6",
+    padding: 4,
   },
   title: {
     fontSize: 20,
     fontWeight: "600",
-    color: "#111827",
   },
   imageContainer: {
     alignItems: "center",
     padding: 20,
-  },
-  profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginBottom: 12,
-  },
-  changePhotoButton: {
-    padding: 8,
-  },
-  changePhotoText: {
-    color: "#3B82F6",
-    fontSize: 14,
-    fontWeight: "500",
   },
   form: {
     padding: 20,
   },
   label: {
     fontSize: 16,
-    color: "#374151",
     marginBottom: 8,
     fontWeight: "500",
   },
   input: {
-    backgroundColor: "#FFFFF",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
     borderRadius: 12,
     padding: 12,
     fontSize: 16,
     marginBottom: 16,
-    color: "#111827",
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: "top",
   },
   saveButton: {
-    backgroundColor: "#3B82F6",
     padding: 16,
     borderRadius: 12,
     alignItems: "center",
