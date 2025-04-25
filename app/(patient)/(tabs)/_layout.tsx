@@ -1,4 +1,3 @@
-import { View, Text } from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,15 +13,12 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: colors.card,
           borderTopColor: colors.border,
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
         },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.secondary,
         tabBarLabelStyle: {
           fontSize: 12,
-          fontWeight: "600",
+          fontWeight: "500",
         },
       }}
     >
@@ -31,7 +27,25 @@ export default function TabsLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={24} color={color} />
+            <Ionicons name="home-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Stats"
+        options={{
+          title: "Stats",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="stats-chart" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Advice"
+        options={{
+          title: "Advice",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="help-buoy" size={size} color={color} />
           ),
         }}
       />
@@ -40,7 +54,7 @@ export default function TabsLayout() {
         options={{
           title: "Profile",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={24} color={color} />
+            <Ionicons name="person-outline" size={size} color={color} />
           ),
         }}
       />

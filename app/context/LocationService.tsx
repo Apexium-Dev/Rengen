@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import * as Location from "expo-location";
 
 type LocationData = {
@@ -13,9 +13,7 @@ export const LocationContext = createContext<LocationData>({
   errorMsg: null,
 });
 
-export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export function LocationProvider({ children }: { children: React.ReactNode }) {
   const [location, setLocation] =
     useState<Location.LocationObjectCoords | null>(null);
   const [address, setAddress] = useState<string | null>(null);
@@ -49,4 +47,6 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({
       {children}
     </LocationContext.Provider>
   );
-};
+}
+
+export default LocationProvider;
