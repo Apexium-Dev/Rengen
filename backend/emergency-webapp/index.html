@@ -59,7 +59,7 @@
     <script>
       const filterInput = document.getElementById("filter");
       const emergencyTable = document.getElementById("emergencyTable");
-      let emergencies = []; // To store fetched emergencies
+      let emergencies = [];
 
       async function fetchEmergencies() {
         const response = await fetch("http://localhost:3000/emergencies");
