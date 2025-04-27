@@ -8,7 +8,7 @@ import {
   Dimensions,
   Linking,
 } from "react-native";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { auth, db } from "@/Firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { LocationContext } from "../context/LocationService";
@@ -16,6 +16,7 @@ import { useTheme } from "../context/ThemeContext";
 import { router } from "expo-router";
 import MapView, { Marker } from "react-native-maps";
 import emergencyData from "../../data/phones.json";
+import axios from "axios";
 
 const { width } = Dimensions.get("window");
 const BUTTON_SIZE = width - 100;
@@ -34,15 +35,33 @@ interface CountryEmergencyData {
   emergency_numbers: EmergencyNumbers;
 }
 
+interface Person {
+  name: string;
+  phone: string;
+  age: number;
+  gender: string;
+  bloodType: string;
+  allergies: string;
+  medications: string;
+  timestamp: string;
+  latitude: any;
+  longitude: any;
+}
+
 export default function EmergencyButton() {
   const { colors } = useTheme();
   const { location, address } = useContext(LocationContext);
+
   const [name, setName] = useState("");
   const [bloodType, setBloodType] = useState("");
   const [allergies, setAllergies] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [longitude, setLongitude] = useState(location?.longitude);
+  const [latitude, setLatitude] = useState(location?.latitude);
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
   const [medicalConditions, setMedicalConditions] = useState("");
   const [loading, setLoading] = useState(true);
-  const [countryCode, setCountryCode] = useState("");
   const [emergencyNumbers, setEmergencyNumbers] = useState<EmergencyNumbers>({
     general: "112",
     ambulance: "112",
@@ -66,6 +85,7 @@ export default function EmergencyButton() {
           setBloodType(data.bloodType || "");
           setAllergies(data.allergies || "");
           setMedicalConditions(data.medicalConditions || "");
+          setPhoneNumber(data.phone || "");
         }
       } catch (error) {
         console.log("Error loading user profile:", error);
@@ -92,9 +112,7 @@ export default function EmergencyButton() {
 
         if (country) {
           const code = country.short_name;
-          setCountryCode(code);
 
-          // Find emergency numbers for the country
           const countryData = emergencyData.emergency_numbers.find(
             (item: CountryEmergencyData) => item.iso_code === code
           );
@@ -109,10 +127,29 @@ export default function EmergencyButton() {
     }
   };
 
-  const handleEmergencyCall = () => {
-    const number =
-      emergencyNumbers.general || emergencyNumbers.ambulance || "112";
-    Linking.openURL(`tel:${number}`);
+  const handleEmergencyCall = async () => {
+    const person: Person = {
+      name,
+      phone: phoneNumber,
+      age: 20,
+      gender: "male",
+      bloodType,
+      allergies,
+      medications: medicalConditions,
+      timestamp: new Date().toISOString(),
+      latitude: latitude || "UNKNOW",
+      longitude: longitude || "UNKNOW",
+    };
+
+    try {
+      const response = await axios.post(
+        "http://192.168.100.135:3000/emergency",
+        person
+      );
+      console.log("Success:", response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const navigateToEditProfile = () => {
@@ -156,37 +193,22 @@ export default function EmergencyButton() {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.profileItem}>
-          <Text style={[styles.label, { color: colors.secondary }]}>Name</Text>
-          <Text style={[styles.value, { color: colors.text }]}>{name}</Text>
-        </View>
-
-        <View style={styles.profileItem}>
-          <Text style={[styles.label, { color: colors.secondary }]}>
-            Blood Type
-          </Text>
-          <Text style={[styles.value, { color: colors.text }]}>
-            {bloodType || "Not set"}
-          </Text>
-        </View>
-
-        <View style={styles.profileItem}>
-          <Text style={[styles.label, { color: colors.secondary }]}>
-            Allergies
-          </Text>
-          <Text style={[styles.value, { color: colors.text }]}>
-            {allergies || "None"}
-          </Text>
-        </View>
-
-        <View style={styles.profileItem}>
-          <Text style={[styles.label, { color: colors.secondary }]}>
-            Medical Conditions
-          </Text>
-          <Text style={[styles.value, { color: colors.text }]}>
-            {medicalConditions || "None"}
-          </Text>
-        </View>
+        <ProfileItem label="Name" value={name} color={colors} />
+        <ProfileItem
+          label="Blood Type"
+          value={bloodType || "Not set"}
+          color={colors}
+        />
+        <ProfileItem
+          label="Allergies"
+          value={allergies || "None"}
+          color={colors}
+        />
+        <ProfileItem
+          label="Medical Conditions"
+          value={medicalConditions || "None"}
+          color={colors}
+        />
       </View>
 
       <View style={[styles.section, { backgroundColor: colors.card }]}>
@@ -216,13 +238,7 @@ export default function EmergencyButton() {
               longitudeDelta: 0.005,
             }}
           >
-            <Marker
-              coordinate={{
-                latitude: location.latitude,
-                longitude: location.longitude,
-              }}
-              title="Your Location"
-            />
+            <Marker coordinate={location} title="Your Location" />
           </MapView>
         )}
       </View>
@@ -232,66 +248,80 @@ export default function EmergencyButton() {
           Emergency Numbers
         </Text>
 
-        <TouchableOpacity
-          style={styles.emergencyNumber}
-          onPress={() => {
-            const number =
-              emergencyNumbers.general || emergencyNumbers.ambulance || "112";
-            Linking.openURL(`tel:${number}`);
-          }}
-        >
-          <View style={styles.numberIcon}>
-            <Ionicons name="medical" size={24} color={colors.error} />
-          </View>
-          <View style={styles.numberInfo}>
-            <Text style={[styles.numberLabel, { color: colors.text }]}>
-              Ambulance
-            </Text>
-            <Text style={[styles.numberValue, { color: colors.text }]}>
-              {emergencyNumbers.general || emergencyNumbers.ambulance || "112"}
-            </Text>
-          </View>
-        </TouchableOpacity>
+        <EmergencyCallButton
+          icon="medical"
+          label="Ambulance"
+          number={
+            emergencyNumbers.general || emergencyNumbers.ambulance || "112"
+          }
+          color={colors}
+        />
 
         {emergencyNumbers.police && (
-          <TouchableOpacity
-            style={styles.emergencyNumber}
-            onPress={() => Linking.openURL(`tel:${emergencyNumbers.police}`)}
-          >
-            <View style={styles.numberIcon}>
-              <Ionicons name="shield" size={24} color={colors.primary} />
-            </View>
-            <View style={styles.numberInfo}>
-              <Text style={[styles.numberLabel, { color: colors.text }]}>
-                Police
-              </Text>
-              <Text style={[styles.numberValue, { color: colors.text }]}>
-                {emergencyNumbers.police}
-              </Text>
-            </View>
-          </TouchableOpacity>
+          <EmergencyCallButton
+            icon="shield"
+            label="Police"
+            number={emergencyNumbers.police}
+            color={colors}
+          />
         )}
 
         {emergencyNumbers.fire && (
-          <TouchableOpacity
-            style={styles.emergencyNumber}
-            onPress={() => Linking.openURL(`tel:${emergencyNumbers.fire}`)}
-          >
-            <View style={styles.numberIcon}>
-              <Ionicons name="flame" size={24} color={colors.error} />
-            </View>
-            <View style={styles.numberInfo}>
-              <Text style={[styles.numberLabel, { color: colors.text }]}>
-                Fire Department
-              </Text>
-              <Text style={[styles.numberValue, { color: colors.text }]}>
-                {emergencyNumbers.fire}
-              </Text>
-            </View>
-          </TouchableOpacity>
+          <EmergencyCallButton
+            icon="flame"
+            label="Fire Department"
+            number={emergencyNumbers.fire}
+            color={colors}
+          />
         )}
       </View>
     </ScrollView>
+  );
+}
+
+function ProfileItem({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: string;
+  color: any;
+}) {
+  return (
+    <View style={styles.profileItem}>
+      <Text style={[styles.label, { color: color.secondary }]}>{label}</Text>
+      <Text style={[styles.value, { color: color.text }]}>{value}</Text>
+    </View>
+  );
+}
+
+function EmergencyCallButton({
+  icon,
+  label,
+  number,
+  color,
+}: {
+  icon: any;
+  label: string;
+  number: string;
+  color: any;
+}) {
+  return (
+    <TouchableOpacity
+      style={styles.emergencyNumber}
+      onPress={() => Linking.openURL(`tel:${number}`)}
+    >
+      <View style={styles.numberIcon}>
+        <Ionicons name={icon} size={24} color={color.error} />
+      </View>
+      <View style={styles.numberInfo}>
+        <Text style={[styles.numberLabel, { color: color.text }]}>{label}</Text>
+        <Text style={[styles.numberValue, { color: color.text }]}>
+          {number}
+        </Text>
+      </View>
+    </TouchableOpacity>
   );
 }
 

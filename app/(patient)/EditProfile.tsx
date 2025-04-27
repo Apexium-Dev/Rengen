@@ -7,21 +7,25 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { auth } from "../../Firebase";
 import { db } from "../../Firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { router } from "expo-router";
-import { Picker } from "@react-native-picker/picker";
+import { Ionicons } from "@expo/vector-icons";
 import Avatar from "../components/ui/ProfileAvatar";
 import { useTheme } from "@/app/context/ThemeContext";
-import { Ionicons } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
 
 export default function EditProfile() {
   const { colors } = useTheme();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [bloodType, setBloodType] = useState("");
+  const [gender, setGender] = useState("");
+  const [age, setAge] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,6 +42,8 @@ export default function EditProfile() {
           setName(data.name || "");
           setPhone(data.phone || "");
           setBloodType(data.bloodType || "");
+          setGender(data.gender || "");
+          setAge(data.age || "");
         }
       } catch (error) {
         console.error("Error loading profile:", error);
@@ -50,14 +56,21 @@ export default function EditProfile() {
     const user = auth.currentUser;
     if (!user) return;
 
+    // Validate form
+    if (!name || !phone || !bloodType || !gender || !age) {
+      alert("Please fill out all fields");
+      return;
+    }
+
     try {
       await updateDoc(doc(db, "users", user.uid), {
         name,
         phone,
         bloodType,
+        gender,
+        age,
         updatedAt: new Date(),
       });
-      setBloodType(bloodType);
       alert("Profile updated successfully");
       loadUserProfile();
       router.back();
@@ -76,99 +89,149 @@ export default function EditProfile() {
   }
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: colors.background }]}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View
-        style={[
-          styles.header,
-          { backgroundColor: colors.card, borderBottomColor: colors.border },
-        ]}
+      <ScrollView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        keyboardShouldPersistTaps="handled"
       >
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.primary} />
-        </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.text }]}>Edit Profile</Text>
-      </View>
-
-      <View style={styles.imageContainer}>
-        <Avatar seed={name} size={120} />
-      </View>
-
-      <View style={styles.form}>
-        <Text style={[styles.label, { color: colors.text }]}>Full Name</Text>
-        <TextInput
-          style={[
-            styles.input,
-            {
-              backgroundColor: colors.card,
-              borderColor: colors.border,
-              color: colors.text,
-            },
-          ]}
-          value={name}
-          onChangeText={setName}
-          placeholder="Enter your full name"
-          placeholderTextColor={colors.secondary}
-        />
-
-        <Text style={[styles.label, { color: colors.text }]}>Phone Number</Text>
-        <TextInput
-          style={[
-            styles.input,
-            {
-              backgroundColor: colors.card,
-              borderColor: colors.border,
-              color: colors.text,
-            },
-          ]}
-          value={phone}
-          onChangeText={setPhone}
-          placeholder="Enter your phone number"
-          placeholderTextColor={colors.secondary}
-          keyboardType="phone-pad"
-        />
-
-        <Text style={[styles.label, { color: colors.text }]}>Blood Type</Text>
         <View
           style={[
-            styles.pickerContainer,
-            { backgroundColor: colors.card, borderColor: colors.border },
+            styles.header,
+            { backgroundColor: colors.card, borderBottomColor: colors.border },
           ]}
         >
-          <Picker
-            selectedValue={bloodType}
-            onValueChange={(itemValue) => setBloodType(itemValue)}
-            style={[styles.picker, { color: colors.text }]}
-            dropdownIconColor={colors.text}
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}
           >
-            <Picker.Item
-              label="Select your blood type"
-              value=""
-              color={colors.secondary}
-            />
-            <Picker.Item label="A+" value="A+" color={colors.text} />
-            <Picker.Item label="A-" value="A-" color={colors.text} />
-            <Picker.Item label="B+" value="B+" color={colors.text} />
-            <Picker.Item label="B-" value="B-" color={colors.text} />
-            <Picker.Item label="AB+" value="AB+" color={colors.text} />
-            <Picker.Item label="AB-" value="AB-" color={colors.text} />
-            <Picker.Item label="O+" value="O+" color={colors.text} />
-            <Picker.Item label="O-" value="O-" color={colors.text} />
-          </Picker>
+            <Ionicons name="arrow-back" size={24} color={colors.primary} />
+          </TouchableOpacity>
+          <Text style={[styles.title, { color: colors.text }]}>
+            Edit Profile
+          </Text>
         </View>
 
-        <TouchableOpacity
-          style={[styles.saveButton, { backgroundColor: colors.primary }]}
-          onPress={handleUpdateProfile}
-        >
-          <Text style={styles.saveButtonText}>Save Changes</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        <View style={styles.imageContainer}>
+          <Avatar seed={name} size={120} />
+        </View>
+
+        <View style={styles.form}>
+          <Text style={[styles.label, { color: colors.text }]}>Full Name</Text>
+          <TextInput
+            style={[
+              styles.input,
+              {
+                backgroundColor: colors.card,
+                borderColor: colors.border,
+                color: colors.text,
+              },
+            ]}
+            value={name}
+            onChangeText={setName}
+            placeholder="Enter your full name"
+            placeholderTextColor={colors.secondary}
+          />
+
+          <Text style={[styles.label, { color: colors.text }]}>
+            Phone Number
+          </Text>
+          <TextInput
+            style={[
+              styles.input,
+              {
+                backgroundColor: colors.card,
+                borderColor: colors.border,
+                color: colors.text,
+              },
+            ]}
+            value={phone}
+            onChangeText={setPhone}
+            placeholder="Enter your phone number"
+            placeholderTextColor={colors.secondary}
+            keyboardType="phone-pad"
+          />
+
+          <Text style={[styles.label, { color: colors.text }]}>Gender</Text>
+          <View
+            style={[
+              styles.pickerContainer,
+              { backgroundColor: colors.card, borderColor: colors.border },
+            ]}
+          >
+            <Picker
+              selectedValue={gender}
+              onValueChange={(itemValue) => setGender(itemValue)}
+              style={[styles.picker, { color: colors.text }]}
+              dropdownIconColor={colors.text}
+            >
+              <Picker.Item
+                label="Select your gender"
+                value=""
+                color={colors.secondary}
+              />
+              <Picker.Item label="Male" value="male" color={colors.text} />
+              <Picker.Item label="Female" value="female" color={colors.text} />
+            </Picker>
+          </View>
+
+          <Text style={[styles.label, { color: colors.text }]}>Blood Type</Text>
+          <View
+            style={[
+              styles.pickerContainer,
+              { backgroundColor: colors.card, borderColor: colors.border },
+            ]}
+          >
+            <Picker
+              selectedValue={bloodType}
+              onValueChange={(itemValue) => setBloodType(itemValue)}
+              style={[styles.picker, { color: colors.text }]}
+              dropdownIconColor={colors.text}
+            >
+              <Picker.Item
+                label="Select your blood type"
+                value=""
+                color={colors.secondary}
+              />
+              <Picker.Item label="A+" value="A+" color={colors.text} />
+              <Picker.Item label="A-" value="A-" color={colors.text} />
+              <Picker.Item label="B+" value="B+" color={colors.text} />
+              <Picker.Item label="B-" value="B-" color={colors.text} />
+              <Picker.Item label="AB+" value="AB+" color={colors.text} />
+              <Picker.Item label="AB-" value="AB-" color={colors.text} />
+              <Picker.Item label="O+" value="O+" color={colors.text} />
+              <Picker.Item label="O-" value="O-" color={colors.text} />
+            </Picker>
+          </View>
+
+          <Text style={[styles.label, { color: colors.text }]}>Age</Text>
+          <TextInput
+            style={[
+              styles.input,
+              {
+                backgroundColor: colors.card,
+                borderColor: colors.border,
+                color: colors.text,
+              },
+            ]}
+            value={age}
+            onChangeText={setAge}
+            placeholder="Enter your age"
+            placeholderTextColor={colors.secondary}
+            keyboardType="numeric"
+          />
+
+          <TouchableOpacity
+            style={[styles.saveButton, { backgroundColor: colors.primary }]}
+            onPress={handleUpdateProfile}
+          >
+            <Text style={styles.saveButtonText}>Save Changes</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
