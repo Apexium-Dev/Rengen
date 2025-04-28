@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Emergency Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-brand">
+        <i class="fas fa-ambulance"></i>
+        <span>Emergency Dashboard</span>
+      </div>
+      <div class="nav-controls">
+        <button id="archiveToggleBtn" class="archive-btn">
+          <i class="fas fa-archive"></i> View Archive
+        </button>
+        <button id="refreshBtn" class="refresh-btn">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+        <span id="lastUpdated" class="last-updated"></span>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="filters">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="search" placeholder="Search emergencies..." />
+        </div>
+        <div class="status-filters">
+          <h3>Filter by Status</h3>
+          <div class="filter-options">
+            <label class="filter-option">
+              <input type="checkbox" value="pending" checked />
+              <span class="status-badge pending">Pending</span>
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" value="processing" checked />
+              <span class="status-badge processing">Processing</span>
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" value="done" />
+              <span class="status-badge done">Done</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div id="loading" class="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <span>Loading emergencies...</span>
+      </div>
+
+      <div id="error" class="error hidden">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>Failed to load emergencies. Please try again.</span>
+      </div>
+
+      <div id="archiveHeader" class="archive-header hidden">
+        <h2><i class="fas fa-archive"></i> Archived Emergencies</h2>
+        <p>Showing completed emergencies that have been archived.</p>
+      </div>
+
+      <div id="data" class="data-grid"></div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
