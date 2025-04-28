@@ -6,6 +6,17 @@ Rengen is a comprehensive health monitoring application designed to track season
 
 Rengen combines modern mobile technology with health monitoring capabilities to create a seamless user experience. Built with React Native and Expo, the application offers cross-platform support while maintaining native performance and feel.
 
+### Gallery
+
+<p align="center">
+  <img src="assets/img/HomeScreen.png" alt="Home Screen" height="300"/>
+  <img src="assets/img/StatsScreen.png" alt="Stats Screen" height="300"/>
+  <img src="assets/img/AdviceScreen.png" alt="Advice Screen" height="300"/>
+  <img src="assets/img/ProfilScreen.png" alt="Profile Screen" height="300"/>
+</p>
+
+
+
 ### Problem
 
 Traditional health applications often focus solely on fitness tracking or medical records, leaving gaps in comprehensive health monitoring and emergency response. Most applications fail to account for seasonal health variations and don't provide actionable insights based on environmental factors or personal health data.
